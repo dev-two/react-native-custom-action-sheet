@@ -5,29 +5,27 @@ var ReactNative = require('react-native');
 var { Animated, Dimensions, StyleSheet, View } = ReactNative;
 var window = Dimensions.get('window');
 
-var FadeInView = React.createClass({
-  getInitialState: function() {
-    return {
-      fadeAnim: new Animated.Value(0)
-    };
-  },
+class FadeInView extends React.Component {
+  state = {
+    fadeAnim: new Animated.Value(0)
+  }
 
   componentDidMount() {
     this._animate(this.props);
-  },
+  }
 
-  componentWillReceiveProps: function(newProps) {
+  componentWillReceiveProps(newProps) {
     this._animate(newProps);
-  },
+  }
 
   _animate(newProps){
     return Animated.timing(this.state.fadeAnim, {
       toValue: newProps.visible ? 0.7 : 0,
       duration: 300
     }).start();
-  },
-  
-  render: function() {
+  }
+
+  render() {
     return (
       <Animated.View style={[styles.overlay,
           {opacity: this.state.fadeAnim},
@@ -37,7 +35,8 @@ var FadeInView = React.createClass({
       </Animated.View>
     );
   }
-});
+
+}
 
 var styles = StyleSheet.create({
   overlay: {
