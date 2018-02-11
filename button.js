@@ -1,38 +1,59 @@
-'use strict'
+'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var { StyleSheet, Text, TouchableOpacity, View } = ReactNative;
+var { Animated, Dimensions, StyleSheet, View } = ReactNative;
+var window = Dimensions.get('window');
 
-class Button extends React.Component {
-  render() {
-    return (
-      <TouchableOpacity style={styles.button} onPress={this.props.onPress}>
-        <Text style={styles.buttonText}>
-          {this.props.text}
-        </Text>
-      </TouchableOpacity>
-    );
+class FadeInView extends React.Component {
+  state = {
+    fadeAnim: new Animated.Value(0)
   }
+
+  componentDidMount() {
+    this._animate(this.props);
+  }
+
+  componentWillReceiveProps(newProps) {
+    this._animate(newProps);
+  }
+
+  _animate(newProps){
+    return Animated.timing(this.state.fadeAnim, {
+      toValue: newProps.visible ? 0.3 : 0,
+      duration: 300
+    }).start();
+  }
+
+  render() {
+    if(this.props.visible) {
+      return (
+        <View style={{flex: 1}}>
+          <Animated.View style={[styles.overlay,
+              {opacity: this.state.fadeAnim},
+              {backgroundColor: this.props.backgroundColor || 'black' }
+            ]}>
+          </Animated.View>
+          {this.props.children}
+        </View>
+      );
+    } else {
+      return null
+    }
+  }
+
 }
 
 var styles = StyleSheet.create({
-  buttonText: {
-    color: '#007ff9',
-    alignSelf: 'center',
-    fontSize: 18,
-    fontWeight: 'bold'
-  },
-  button: {
-    height: 57,
-    backgroundColor: 'white',
-    borderColor: 'white',
-    borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 10,
-    alignSelf: 'stretch',
-    justifyContent: 'center'
+  overlay: {
+    top: 0,
+    bottom: -20,
+    left: 0,
+    right: 0,
+    height: window.height,
+    width: window.width,
+    position: 'absolute'
   }
 });
 
-module.exports = Button
+module.exports = FadeInView;
